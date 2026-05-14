@@ -67,8 +67,8 @@ export default function GoalsPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl font-semibold text-slate-900">Metas</h2>
-          <p className="text-sm text-slate-500">Defina objetivos e acompanhe o progresso</p>
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Metas</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Defina objetivos e acompanhe o progresso</p>
         </div>
         <button onClick={startCreate} className="btn-primary"><Plus className="h-4 w-4" /> Nova meta</button>
       </div>
@@ -85,20 +85,20 @@ export default function GoalsPage() {
               <div key={g.id} className="card">
                 <div className="mb-2 flex items-center justify-between">
                   <div>
-                    <p className="text-sm font-semibold text-slate-900">{g.name}</p>
-                    <p className="text-xs text-slate-500">{g.owner_type === "business" ? "Empresa" : "Pessoal"} {g.target_date && `• ${formatDate(g.target_date)}`}</p>
+                    <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{g.name}</p>
+                    <p className="text-xs text-slate-500 dark:text-slate-400">{g.owner_type === "business" ? "Empresa" : "Pessoal"} {g.target_date && `• ${formatDate(g.target_date)}`}</p>
                   </div>
                   <div className="flex gap-1">
                     <button className="btn-ghost" onClick={() => startEdit(g)}><Pencil className="h-3.5 w-3.5" /></button>
                     <button className="btn-danger" onClick={() => handleDelete(g.id)}><Trash2 className="h-3.5 w-3.5" /></button>
                   </div>
                 </div>
-                <div className="my-2 h-2 w-full overflow-hidden rounded-full bg-slate-100">
+                <div className="my-2 h-2 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                   <div className="h-full bg-brand-500 transition-all" style={{ width: `${Math.min(progress, 100)}%` }} />
                 </div>
-                <div className="flex justify-between text-xs text-slate-500">
+                <div className="flex justify-between text-xs text-slate-500 dark:text-slate-400">
                   <span>{formatCurrency(g.current_amount)} / {formatCurrency(g.target_amount)}</span>
-                  <span className="font-medium text-slate-700">{formatPercent(progress)}</span>
+                  <span className="font-medium text-slate-700 dark:text-slate-300">{formatPercent(progress)}</span>
                 </div>
               </div>
             );

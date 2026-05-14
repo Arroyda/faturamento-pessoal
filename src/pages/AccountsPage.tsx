@@ -53,8 +53,8 @@ export default function AccountsPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl font-semibold text-slate-900">Contas</h2>
-          <p className="text-sm text-slate-500">Contas bancárias, carteiras e cartões</p>
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Contas</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Contas bancárias, carteiras e cartões</p>
         </div>
         <button onClick={startCreate} className="btn-primary"><Plus className="h-4 w-4" /> Nova conta</button>
       </div>
@@ -72,9 +72,9 @@ export default function AccountsPage() {
                   <Wallet className="h-5 w-5" />
                 </div>
                 <div>
-                  <p className="text-sm font-semibold text-slate-900">{a.name}</p>
-                  <p className="text-xs text-slate-500">{a.institution || "—"} • {a.owner_type === "business" ? "Empresa" : "Pessoal"}</p>
-                  <p className="mt-1 text-sm font-medium text-slate-700">{formatCurrency(a.initial_balance, a.currency)}</p>
+                  <p className="text-sm font-semibold text-slate-900 dark:text-slate-100">{a.name}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{a.institution || "—"} • {a.owner_type === "business" ? "Empresa" : "Pessoal"}</p>
+                  <p className="mt-1 text-sm font-medium text-slate-700 dark:text-slate-200">{formatCurrency(a.initial_balance, a.currency)}</p>
                 </div>
               </div>
               <div className="flex gap-1">

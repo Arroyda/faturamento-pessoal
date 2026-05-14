@@ -66,8 +66,8 @@ export default function CategoriesPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl font-semibold text-slate-900">Categorias</h2>
-          <p className="text-sm text-slate-500">Organize transações e pagamentos</p>
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Categorias</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Organize transações e pagamentos</p>
         </div>
         <button onClick={startCreate} className="btn-primary"><Plus className="h-4 w-4" /> Nova categoria</button>
       </div>
@@ -83,8 +83,8 @@ export default function CategoriesPage() {
               <div className="flex items-center gap-3">
                 <span className="h-9 w-9 rounded-xl" style={{ backgroundColor: c.color }} />
                 <div>
-                  <p className="text-sm font-medium text-slate-900">{c.name}</p>
-                  <p className="text-xs text-slate-500">{c.type === "income" ? "Receita" : "Despesa"} • {c.owner_type === "business" ? "Empresa" : "Pessoal"}</p>
+                  <p className="text-sm font-medium text-slate-900 dark:text-slate-100">{c.name}</p>
+                  <p className="text-xs text-slate-500 dark:text-slate-400">{c.type === "income" ? "Receita" : "Despesa"} • {c.owner_type === "business" ? "Empresa" : "Pessoal"}</p>
                 </div>
               </div>
               <div className="flex gap-1">
@@ -122,7 +122,7 @@ export default function CategoriesPage() {
             <label className="label">Cor</label>
             <div className="flex flex-wrap gap-2">
               {PRESET_COLORS.map((c) => (
-                <button key={c} type="button" onClick={() => setForm({ ...form, color: c })} className={`h-8 w-8 rounded-lg border-2 ${form.color === c ? "border-slate-900" : "border-transparent"}`} style={{ backgroundColor: c }} />
+                <button key={c} type="button" onClick={() => setForm({ ...form, color: c })} className={`h-8 w-8 rounded-lg border-2 ${form.color === c ? "border-slate-900 dark:border-slate-100" : "border-transparent"}`} style={{ backgroundColor: c }} />
               ))}
             </div>
           </div>

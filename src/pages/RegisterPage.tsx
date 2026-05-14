@@ -61,14 +61,14 @@ export default function RegisterPage() {
   const strengthColor = strength.score >= 5 ? "bg-emerald-500" : strength.score >= 4 ? "bg-amber-500" : strength.score >= 2 ? "bg-orange-500" : "bg-rose-500";
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-brand-50 via-white to-slate-100 p-4">
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-brand-50 via-white to-slate-100 p-4 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950">
       <div className="w-full max-w-md">
         <div className="mb-6 flex flex-col items-center gap-2 text-center">
           <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-brand-600 text-white shadow-soft">
             <PiggyBank className="h-6 w-6" />
           </div>
-          <h1 className="text-2xl font-semibold text-slate-900">Criar conta</h1>
-          <p className="text-sm text-slate-500">Comece a organizar suas finanças em minutos</p>
+          <h1 className="text-2xl font-semibold text-slate-900 dark:text-slate-100">Criar conta</h1>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Comece a organizar suas finanças em minutos</p>
         </div>
 
         <div className="card">
@@ -93,16 +93,16 @@ export default function RegisterPage() {
                   autoComplete="new-password"
                   minLength={8}
                 />
-                <button type="button" onClick={() => setShowPwd((v) => !v)} className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1 text-slate-400 hover:text-slate-700">
+                <button type="button" onClick={() => setShowPwd((v) => !v)} className="absolute right-2 top-1/2 -translate-y-1/2 rounded-lg p-1 text-slate-400 hover:text-slate-700 dark:hover:text-slate-200">
                   {showPwd ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
                 </button>
               </div>
-              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-100">
+              <div className="mt-2 h-1.5 w-full overflow-hidden rounded-full bg-slate-100 dark:bg-slate-800">
                 <div className={`h-full transition-all ${strengthColor}`} style={{ width: `${(strength.score / 5) * 100}%` }} />
               </div>
               <ul className="mt-2 grid grid-cols-2 gap-1 text-[11px]">
                 {reqs.map((r) => (
-                  <li key={r.label} className={`flex items-center gap-1 ${r.ok ? "text-emerald-600" : "text-slate-400"}`}>
+                  <li key={r.label} className={`flex items-center gap-1 ${r.ok ? "text-emerald-600 dark:text-emerald-400" : "text-slate-400 dark:text-slate-500"}`}>
                     {r.ok ? <Check className="h-3 w-3" /> : <X className="h-3 w-3" />}
                     {r.label}
                   </li>
@@ -119,9 +119,9 @@ export default function RegisterPage() {
           </form>
         </div>
 
-        <p className="mt-6 text-center text-sm text-slate-500">
+        <p className="mt-6 text-center text-sm text-slate-500 dark:text-slate-400">
           Já tem uma conta?{" "}
-          <Link to="/login" className="font-medium text-brand-600 hover:underline">Entrar</Link>
+          <Link to="/login" className="font-medium text-brand-600 hover:underline dark:text-brand-400">Entrar</Link>
         </p>
       </div>
     </div>

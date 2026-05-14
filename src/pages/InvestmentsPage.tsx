@@ -127,8 +127,8 @@ export default function InvestmentsPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl font-semibold text-slate-900">Investimentos</h2>
-          <p className="text-sm text-slate-500">Acompanhe seu portfólio em tempo real</p>
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Investimentos</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Acompanhe seu portfólio em tempo real</p>
         </div>
         <button onClick={startCreate} className="btn-primary"><Plus className="h-4 w-4" /> Novo investimento</button>
       </div>
@@ -147,7 +147,7 @@ export default function InvestmentsPage() {
       ) : (
         <div className="card overflow-x-auto p-0">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+            <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-800/50 dark:text-slate-400">
               <tr>
                 <th className="px-4 py-3">Ativo</th>
                 <th className="px-4 py-3">Tipo</th>
@@ -166,17 +166,17 @@ export default function InvestmentsPage() {
                 const ret = pos - invest;
                 const retPct = invest > 0 ? (ret / invest) * 100 : 0;
                 return (
-                  <tr key={i.id} className="border-t border-slate-100">
+                  <tr key={i.id} className="border-t border-slate-100 dark:border-slate-800">
                     <td className="px-4 py-3">
-                      <div className="font-medium text-slate-900">{i.name}</div>
-                      {i.ticker && <div className="text-xs text-slate-500">{i.ticker} • {i.broker || "—"}</div>}
+                      <div className="font-medium text-slate-900 dark:text-slate-100">{i.name}</div>
+                      {i.ticker && <div className="text-xs text-slate-500 dark:text-slate-400">{i.ticker} • {i.broker || "—"}</div>}
                     </td>
                     <td className="px-4 py-3"><span className="chip">{TYPE_LABEL[i.type]}</span></td>
-                    <td className="px-4 py-3 text-right">{i.quantity}</td>
-                    <td className="px-4 py-3 text-right">{formatCurrency(i.purchase_price)}</td>
-                    <td className="px-4 py-3 text-right">{formatCurrency(i.current_price)}</td>
-                    <td className="px-4 py-3 text-right font-medium">{formatCurrency(pos)}</td>
-                    <td className={`px-4 py-3 text-right ${ret >= 0 ? "text-emerald-600" : "text-rose-600"}`}>
+                    <td className="px-4 py-3 text-slate-700 dark:text-slate-200 text-right">{i.quantity}</td>
+                    <td className="px-4 py-3 text-slate-700 dark:text-slate-200 text-right">{formatCurrency(i.purchase_price)}</td>
+                    <td className="px-4 py-3 text-slate-700 dark:text-slate-200 text-right">{formatCurrency(i.current_price)}</td>
+                    <td className="px-4 py-3 text-right font-medium text-slate-900 dark:text-slate-100">{formatCurrency(pos)}</td>
+                    <td className={`px-4 py-3 text-right ${ret >= 0 ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>
                       <div className="inline-flex items-center gap-1">
                         {ret >= 0 ? <TrendingUp className="h-3 w-3" /> : <TrendingDown className="h-3 w-3" />}
                         {formatCurrency(ret)} ({formatPercent(retPct)})
@@ -264,8 +264,8 @@ export default function InvestmentsPage() {
 function SmallCard({ label, value, positive }: { label: string; value: string; positive?: boolean }) {
   return (
     <div className="card">
-      <p className="text-xs font-medium uppercase tracking-wide text-slate-500">{label}</p>
-      <p className={`mt-1 text-xl font-semibold ${positive === undefined ? "text-slate-900" : positive ? "text-emerald-600" : "text-rose-600"}`}>{value}</p>
+      <p className="text-xs font-medium uppercase tracking-wide text-slate-500 dark:text-slate-400">{label}</p>
+      <p className={`mt-1 text-xl font-semibold ${positive === undefined ? "text-slate-900 dark:text-slate-100" : positive ? "text-emerald-600 dark:text-emerald-400" : "text-rose-600 dark:text-rose-400"}`}>{value}</p>
     </div>
   );
 }

@@ -124,14 +124,14 @@ export default function SettingsPage() {
   return (
     <div className="mx-auto max-w-2xl space-y-6">
       <div>
-        <h2 className="text-xl font-semibold text-slate-900">Configurações</h2>
-        <p className="text-sm text-slate-500">Gerencie seu perfil, segurança e dados</p>
+        <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Configurações</h2>
+        <p className="text-sm text-slate-500 dark:text-slate-400">Gerencie seu perfil, segurança e dados</p>
       </div>
 
       <div className="card">
         <div className="mb-4 flex items-center gap-2">
-          <UserCircle className="h-5 w-5 text-brand-600" />
-          <h3 className="text-sm font-semibold text-slate-900">Perfil</h3>
+          <UserCircle className="h-5 w-5 text-brand-600 dark:text-brand-400" />
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Perfil</h3>
         </div>
         <form onSubmit={handleSave} className="space-y-3">
           <div>
@@ -140,7 +140,7 @@ export default function SettingsPage() {
           </div>
           <div>
             <label className="label">Email</label>
-            <input className="input bg-slate-50" value={user.email} disabled />
+            <input className="input bg-slate-50 dark:bg-slate-800" value={user.email} disabled />
           </div>
           <div className="grid grid-cols-2 gap-3">
             <div>
@@ -168,10 +168,10 @@ export default function SettingsPage() {
 
       <div className="card">
         <div className="mb-4 flex items-center gap-2">
-          <Download className="h-5 w-5 text-emerald-600" />
-          <h3 className="text-sm font-semibold text-slate-900">Backup — Export / Import</h3>
+          <Download className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Backup — Export / Import</h3>
         </div>
-        <p className="mb-3 text-xs text-slate-500">
+        <p className="mb-3 text-xs text-slate-500 dark:text-slate-400">
           Baixe um JSON com todos os seus dados para guardar como backup ou levar para outro browser/máquina. Importar substitui completamente os dados existentes.
         </p>
         <div className="flex flex-wrap gap-2">
@@ -189,8 +189,8 @@ export default function SettingsPage() {
 
       <div className="card">
         <div className="mb-4 flex items-center gap-2">
-          <Lock className="h-5 w-5 text-brand-600" />
-          <h3 className="text-sm font-semibold text-slate-900">Alterar senha</h3>
+          <Lock className="h-5 w-5 text-brand-600 dark:text-brand-400" />
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Alterar senha</h3>
         </div>
         <form onSubmit={handleChangePassword} className="space-y-3">
           <div>
@@ -215,10 +215,10 @@ export default function SettingsPage() {
 
       <div className="card">
         <div className="mb-4 flex items-center gap-2">
-          <Shield className="h-5 w-5 text-emerald-600" />
-          <h3 className="text-sm font-semibold text-slate-900">Segurança</h3>
+          <Shield className="h-5 w-5 text-emerald-600 dark:text-emerald-400" />
+          <h3 className="text-sm font-semibold text-slate-900 dark:text-slate-100">Segurança</h3>
         </div>
-        <ul className="ml-4 list-disc space-y-1 text-xs text-slate-600">
+        <ul className="ml-4 list-disc space-y-1 text-xs text-slate-600 dark:text-slate-400">
           <li>Senhas armazenadas com hash PBKDF2-SHA256 (200k iterações) usando Web Crypto API nativa do browser.</li>
           <li>Os dados ficam isolados em <code>localStorage</code> do browser deste dispositivo.</li>
           <li>Faça backups regulares com <strong>Exportar JSON</strong> — limpar o navegador apaga tudo.</li>
@@ -226,12 +226,12 @@ export default function SettingsPage() {
         </ul>
       </div>
 
-      <div className="card border-rose-200 bg-rose-50/50">
+      <div className="card border-rose-200 bg-rose-50/50 dark:border-rose-900/40 dark:bg-rose-500/10">
         <div className="mb-3 flex items-center gap-2">
-          <ShieldAlert className="h-5 w-5 text-rose-600" />
-          <h3 className="text-sm font-semibold text-rose-900">Zona de risco</h3>
+          <ShieldAlert className="h-5 w-5 text-rose-600 dark:text-rose-400" />
+          <h3 className="text-sm font-semibold text-rose-900 dark:text-rose-200">Zona de risco</h3>
         </div>
-        <p className="mb-3 text-xs text-rose-700">Apaga todas as transações, investimentos, pagamentos, contas, categorias e metas. A conta permanece, mas os dados zeram. Exporte um backup antes.</p>
+        <p className="mb-3 text-xs text-rose-700 dark:text-rose-300">Apaga todas as transações, investimentos, pagamentos, contas, categorias e metas. A conta permanece, mas os dados zeram. Exporte um backup antes.</p>
         <div className="flex gap-2">
           <button onClick={handleWipe} className="btn-danger"><Trash2 className="h-4 w-4" />Apagar todos os dados</button>
           <button onClick={() => { logout(); }} className="btn-secondary">Sair</button>

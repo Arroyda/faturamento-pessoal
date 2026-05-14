@@ -9,10 +9,10 @@ import { Category, OwnerType, Payment, PaymentStatus, Recurrence } from "@/types
 import { formatCurrency, formatDate } from "@/lib/utils";
 
 const STATUS_LABEL: Record<PaymentStatus, { label: string; color: string }> = {
-  pending: { label: "Pendente", color: "bg-amber-100 text-amber-700" },
-  paid: { label: "Pago", color: "bg-emerald-100 text-emerald-700" },
-  overdue: { label: "Vencido", color: "bg-rose-100 text-rose-700" },
-  canceled: { label: "Cancelado", color: "bg-slate-100 text-slate-600" },
+  pending: { label: "Pendente", color: "bg-amber-100 text-amber-700 dark:bg-amber-500/20 dark:text-amber-300" },
+  paid: { label: "Pago", color: "bg-emerald-100 text-emerald-700 dark:bg-emerald-500/20 dark:text-emerald-300" },
+  overdue: { label: "Vencido", color: "bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300" },
+  canceled: { label: "Cancelado", color: "bg-slate-100 text-slate-600 dark:bg-slate-800 dark:text-slate-300" },
 };
 
 type FormState = {
@@ -135,15 +135,15 @@ export default function PaymentsPage() {
     <div className="space-y-4">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div>
-          <h2 className="text-xl font-semibold text-slate-900">Pagamentos</h2>
-          <p className="text-sm text-slate-500">Contas a pagar e recorrências</p>
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">Pagamentos</h2>
+          <p className="text-sm text-slate-500 dark:text-slate-400">Contas a pagar e recorrências</p>
         </div>
         <button onClick={startCreate} className="btn-primary"><Plus className="h-4 w-4" /> Novo pagamento</button>
       </div>
 
       <div className="flex flex-wrap gap-2">
         {(["all", "pending", "overdue", "paid", "canceled"] as const).map((f) => (
-          <button key={f} onClick={() => setFilter(f)} className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${filter === f ? "bg-brand-600 text-white" : "bg-white text-slate-600 hover:bg-slate-100"}`}>
+          <button key={f} onClick={() => setFilter(f)} className={`rounded-full px-3 py-1.5 text-xs font-medium transition ${filter === f ? "bg-brand-600 text-white" : "bg-white text-slate-600 hover:bg-slate-100 dark:bg-slate-900 dark:text-slate-300 dark:hover:bg-slate-800"}`}>
             {f === "all" ? "Todos" : f === "overdue" ? "Vencidos" : STATUS_LABEL[f].label}
           </button>
         ))}
@@ -156,7 +156,7 @@ export default function PaymentsPage() {
       ) : (
         <div className="card overflow-x-auto p-0">
           <table className="w-full text-sm">
-            <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500">
+            <thead className="bg-slate-50 text-left text-xs uppercase tracking-wide text-slate-500 dark:bg-slate-800/50 dark:text-slate-400">
               <tr>
                 <th className="px-4 py-3">Vencimento</th>
                 <th className="px-4 py-3">Descrição</th>
@@ -171,21 +171,21 @@ export default function PaymentsPage() {
                 const isOverdue = p.status === "pending" && p.due_date.slice(0, 10) < today;
                 const status = isOverdue ? "overdue" : p.status;
                 return (
-                  <tr key={p.id} className="border-t border-slate-100">
-                    <td className="px-4 py-3 text-slate-500">{formatDate(p.due_date)}</td>
+                  <tr key={p.id} className="border-t border-slate-100 dark:border-slate-800">
+                    <td className="px-4 py-3 text-slate-500 dark:text-slate-400">{formatDate(p.due_date)}</td>
                     <td className="px-4 py-3">
-                      <div className="font-medium text-slate-900">{p.description}</div>
-                      {p.payee && <div className="text-xs text-slate-500">{p.payee}</div>}
+                      <div className="font-medium text-slate-900 dark:text-slate-100">{p.description}</div>
+                      {p.payee && <div className="text-xs text-slate-500 dark:text-slate-400">{p.payee}</div>}
                     </td>
                     <td className="px-4 py-3"><span className="chip">{p.owner_type === "business" ? "Empresa" : "Pessoal"}</span></td>
                     <td className="px-4 py-3">
                       <span className={`chip ${STATUS_LABEL[status].color}`}>{STATUS_LABEL[status].label}</span>
                     </td>
-                    <td className="px-4 py-3 text-right font-semibold text-slate-900">{formatCurrency(p.amount)}</td>
+                    <td className="px-4 py-3 text-right font-semibold text-slate-900 dark:text-slate-100">{formatCurrency(p.amount)}</td>
                     <td className="px-4 py-3 text-right">
                       <div className="inline-flex gap-1">
                         {p.status !== "paid" && (
-                          <button onClick={() => markAsPaid(p.id)} className="btn-ghost text-emerald-600"><CheckCircle2 className="h-3.5 w-3.5" /></button>
+                          <button onClick={() => markAsPaid(p.id)} className="btn-ghost text-emerald-600 dark:text-emerald-400"><CheckCircle2 className="h-3.5 w-3.5" /></button>
                         )}
                         <button onClick={() => startEdit(p)} className="btn-ghost"><Pencil className="h-3.5 w-3.5" /></button>
                         <button onClick={() => handleDelete(p.id)} className="btn-danger"><Trash2 className="h-3.5 w-3.5" /></button>

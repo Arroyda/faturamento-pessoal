@@ -28,6 +28,14 @@ export interface Transaction {
   notes?: string | null;
   recurrence: Recurrence;
   tags: string[];
+  /** Marca se a transação já foi efetivamente paga (usado principalmente em parcelas). Default: true. */
+  is_paid?: boolean;
+  /** Identificador comum entre parcelas do mesmo grupo. */
+  installment_group_id?: string | null;
+  /** Número desta parcela (1-based). */
+  installment_number?: number | null;
+  /** Total de parcelas do grupo. */
+  installment_total?: number | null;
   created_at: string;
   updated_at: string;
 }
@@ -116,10 +124,26 @@ export interface DashboardSummary {
     business: { income: number; expense: number; balance: number };
     investments: { invested: number; current_value: number; return_amount: number; return_pct: number };
     payments: { pending_total: number; overdue_total: number };
+    installments: {
+      current_month_total: number;
+      current_month_pending: number;
+      current_month_paid: number;
+      future_pending_total: number;
+    };
   };
   series_monthly: { month: string; income: number; expense: number; net: number }[];
   expense_by_category: { category_id: string; total: number }[];
   investments_by_type: { type: string; value: number }[];
   upcoming_payments: { id: string; description: string; amount: number; due_date: string; owner_type: OwnerType }[];
   goals: { id: string; name: string; target: number; current: number; progress: number }[];
+  current_month_installments: {
+    id: string;
+    description: string;
+    amount: number;
+    occurred_at: string;
+    installment_number: number;
+    installment_total: number;
+    is_paid: boolean;
+    owner_type: OwnerType;
+  }[];
 }

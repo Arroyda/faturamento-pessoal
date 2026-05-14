@@ -3,12 +3,12 @@
  * Substitui o axios: cada chamada é resolvida em memória contra o localStorage.
  */
 
-import { OwnerType, TransactionType, PaymentStatus } from "@/types";
-import { UserData } from "./localdb";
+import { OwnerType, Transaction, TransactionType, PaymentStatus } from "@/types";
+import { UserData, loadUserData, saveUserData } from "./localdb";
 import { currentProfile, currentUid, updateProfile } from "./auth";
 import { Filter, ListOptions, rawUserData, repo, replaceUserData, wipeUserData } from "./repo";
 import { computeSummary } from "./dashboard";
-import { nowIso } from "./crypto";
+import { newUid, nowIso } from "./crypto";
 
 type Method = "GET" | "POST" | "PUT" | "DELETE";
 
@@ -48,6 +48,76 @@ function buildTxFilters(q: URLSearchParams): Filter[] {
   if (start) filters.push({ field: "occurred_at", op: ">=", value: start });
   if (end) filters.push({ field: "occurred_at", op: "<=", value: end });
   return filters;
+}
+
+function round2(n: number): number {
+  return Math.round(n * 100) / 100;
+}
+
+interface InstallmentPayload {
+  description: string;
+  amount: number;
+  type: TransactionType;
+  owner_type: OwnerType;
+  category_id?: string | null;
+  occurred_at: string;
+  notes?: string | null;
+  installments: number;
+}
+
+function createInstallments(uid: string, payload: InstallmentPayload): Transaction[] {
+  const total = Math.max(2, Math.floor(Number(payload.installments) || 2));
+  const amount = Number(payload.amount) || 0;
+  if (amount <= 0) throw new ApiError(400, "Valor total inválido");
+  const per = round2(amount / total);
+  const groupId = newUid();
+
+  const data = loadUserData(uid);
+  const created: Transaction[] = [];
+  const start = new Date(payload.occurred_at);
+  if (Number.isNaN(start.getTime())) throw new ApiError(400, "Data inválida");
+
+  for (let i = 0; i < total; i++) {
+    const d = new Date(start.getFullYear(), start.getMonth() + i, start.getDate());
+    const dateStr = d.toISOString().slice(0, 10);
+    // distribui o resto da divisão na última parcela
+    const amt = i === total - 1 ? round2(amount - per * (total - 1)) : per;
+    const now = nowIso();
+    const item: Transaction = {
+      id: newUid(),
+      user_id: uid,
+      description: payload.description,
+      amount: amt,
+      type: payload.type,
+      owner_type: payload.owner_type,
+      category_id: payload.category_id || null,
+      account_id: null,
+      occurred_at: dateStr,
+      notes: payload.notes || null,
+      recurrence: "none",
+      tags: [],
+      is_paid: false,
+      installment_group_id: groupId,
+      installment_number: i + 1,
+      installment_total: total,
+      created_at: now,
+      updated_at: now,
+    };
+    data.transactions.push(item);
+    created.push(item);
+  }
+
+  saveUserData(uid, data);
+  return created;
+}
+
+function deleteInstallmentGroup(uid: string, groupId: string): number {
+  const data = loadUserData(uid);
+  const before = data.transactions.length;
+  data.transactions = data.transactions.filter((t) => t.installment_group_id !== groupId);
+  const removed = before - data.transactions.length;
+  if (removed > 0) saveUserData(uid, data);
+  return removed;
 }
 
 export async function route<T>(method: Method, pathAndQuery: string, body?: unknown): Promise<T> {
@@ -97,6 +167,20 @@ export async function route<T>(method: Method, pathAndQuery: string, body?: unkn
     authedUid();
     wipeUserData();
     return undefined as unknown as T;
+  }
+
+  // --- TRANSACTIONS: INSTALLMENTS ---
+  if (path === "/transactions/installments" && method === "POST") {
+    const uid = authedUid();
+    const created = createInstallments(uid, (body || {}) as InstallmentPayload);
+    return created as unknown as T;
+  }
+  const groupMatch = path.match(/^\/transactions\/installments\/group\/([^/]+)$/);
+  if (groupMatch && method === "DELETE") {
+    const uid = authedUid();
+    const removed = deleteInstallmentGroup(uid, groupMatch[1]);
+    if (removed === 0) throw new ApiError(404, "Grupo de parcelas não encontrado");
+    return { removed } as unknown as T;
   }
 
   // --- COLEÇÕES GENÉRICAS ---

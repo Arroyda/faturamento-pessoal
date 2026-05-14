@@ -44,15 +44,48 @@ export function computeSummary(params: DashboardParams = {}): DashboardSummary {
   let currentMonthIncome = 0;
   let currentMonthExpense = 0;
 
+  // Installments aggregates
+  let installmentsCurrentMonthTotal = 0;
+  let installmentsCurrentMonthPending = 0;
+  let installmentsCurrentMonthPaid = 0;
+  let installmentsFuturePending = 0;
+  const currentMonthInstallments: DashboardSummary["current_month_installments"] = [];
+
   const monthSeries = new Map<string, { income: number; expense: number }>();
   const categoryTotals = new Map<string, number>();
 
   for (const tx of transactions) {
     const occ = parseDate(tx.occurred_at);
-    if (!occ || occ < startWindow) continue;
-    if (ownerType && tx.owner_type !== ownerType) continue;
-    const amount = Number(tx.amount) || 0;
+    if (!occ) continue;
     const monthKey = ym(occ);
+    const isInstallment = !!(tx.installment_total && tx.installment_total > 1);
+    const isPaid = tx.is_paid !== false; // default true para compat
+    const amount = Number(tx.amount) || 0;
+
+    // ----- Installments (todas, mesmo fora da janela) -----
+    if (isInstallment && tx.type === "expense" && (!ownerType || tx.owner_type === ownerType)) {
+      if (monthKey === currentMonthKey) {
+        installmentsCurrentMonthTotal += amount;
+        if (isPaid) installmentsCurrentMonthPaid += amount;
+        else installmentsCurrentMonthPending += amount;
+        currentMonthInstallments.push({
+          id: tx.id,
+          description: tx.description,
+          amount: round(amount),
+          occurred_at: tx.occurred_at,
+          installment_number: Number(tx.installment_number) || 0,
+          installment_total: Number(tx.installment_total) || 0,
+          is_paid: isPaid,
+          owner_type: tx.owner_type,
+        });
+      } else if (occ > today && !isPaid) {
+        installmentsFuturePending += amount;
+      }
+    }
+
+    // ----- Janela do dashboard (somatórios gerais) -----
+    if (occ < startWindow) continue;
+    if (ownerType && tx.owner_type !== ownerType) continue;
     const slot = monthSeries.get(monthKey) || { income: 0, expense: 0 };
     if (tx.type === "income") {
       totalIncome += amount;
@@ -71,6 +104,8 @@ export function computeSummary(params: DashboardParams = {}): DashboardSummary {
     }
     monthSeries.set(monthKey, slot);
   }
+
+  currentMonthInstallments.sort((a, b) => (a.occurred_at < b.occurred_at ? -1 : 1));
 
   const series = Array.from(monthSeries.entries())
     .sort((a, b) => (a[0] < b[0] ? -1 : 1))
@@ -150,6 +185,12 @@ export function computeSummary(params: DashboardParams = {}): DashboardSummary {
         pending_total: round(pendingTotal),
         overdue_total: round(overdueTotal),
       },
+      installments: {
+        current_month_total: round(installmentsCurrentMonthTotal),
+        current_month_pending: round(installmentsCurrentMonthPending),
+        current_month_paid: round(installmentsCurrentMonthPaid),
+        future_pending_total: round(installmentsFuturePending),
+      },
     },
     series_monthly: series,
     expense_by_category: Array.from(categoryTotals.entries())
@@ -158,5 +199,6 @@ export function computeSummary(params: DashboardParams = {}): DashboardSummary {
     investments_by_type: Array.from(investByType.entries()).map(([type, value]) => ({ type, value: round(value) })),
     upcoming_payments: upcoming.slice(0, 10),
     goals: goalProgress,
+    current_month_installments: currentMonthInstallments,
   };
 }
