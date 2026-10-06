@@ -36,6 +36,8 @@ export interface Transaction {
   installment_number?: number | null;
   /** Total de parcelas do grupo. */
   installment_total?: number | null;
+  /** Pagamento que originou esta transação (criada ao marcar como PAGO). */
+  payment_id?: string | null;
   created_at: string;
   updated_at: string;
 }
@@ -81,6 +83,8 @@ export interface Payment {
   payee?: string | null;
   notes?: string | null;
   paid_at?: string | null;
+  /** Transação de despesa gerada quando o pagamento foi marcado como pago. */
+  transaction_id?: string | null;
   created_at: string;
   updated_at: string;
 }

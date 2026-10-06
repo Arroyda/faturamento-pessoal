@@ -3,7 +3,7 @@
  * Substitui o axios: cada chamada é resolvida em memória contra o localStorage.
  */
 
-import { OwnerType, Transaction, TransactionType, PaymentStatus } from "@/types";
+import { OwnerType, Payment, Transaction, TransactionType, PaymentStatus } from "@/types";
 import { UserData, loadUserData, saveUserData } from "./localdb";
 import { currentProfile, currentUid, updateProfile } from "./auth";
 import { Filter, ListOptions, rawUserData, repo, replaceUserData, wipeUserData } from "./repo";
@@ -120,6 +120,66 @@ function deleteInstallmentGroup(uid: string, groupId: string): number {
   return removed;
 }
 
+
+function todayLocal(): string {
+  const d = new Date();
+  return `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, "0")}-${String(d.getDate()).padStart(2, "0")}`;
+}
+
+/**
+ * Mantém a transação de despesa alinhada ao status do pagamento:
+ * - pago  → cria (ou atualiza) a transação com os dados do pagamento
+ * - outro → remove a transação gerada anteriormente, se existir
+ */
+function syncPaymentTransaction(uid: string, paymentId: string): Payment | null {
+  const data = loadUserData(uid);
+  const idx = data.payments.findIndex((p) => p.id === paymentId);
+  if (idx < 0) return null;
+  const p = data.payments[idx];
+  const now = nowIso();
+  const txIdx = p.transaction_id ? data.transactions.findIndex((t) => t.id === p.transaction_id) : -1;
+
+  if (p.status === "paid") {
+    const notes = [p.payee ? `Beneficiário: ${p.payee}` : null, p.notes || null].filter(Boolean).join(" — ") || null;
+    const fields = {
+      description: p.description,
+      amount: Number(p.amount) || 0,
+      owner_type: p.owner_type,
+      category_id: p.category_id || null,
+      notes,
+    };
+    if (txIdx >= 0) {
+      data.transactions[txIdx] = { ...data.transactions[txIdx], ...fields, updated_at: now };
+    } else {
+      const tx: Transaction = {
+        id: newUid(),
+        user_id: uid,
+        ...fields,
+        type: "expense",
+        account_id: null,
+        occurred_at: todayLocal(),
+        recurrence: "none",
+        tags: [],
+        is_paid: true,
+        payment_id: p.id,
+        created_at: now,
+        updated_at: now,
+      };
+      data.transactions.push(tx);
+      p.transaction_id = tx.id;
+    }
+    p.paid_at = p.paid_at || now;
+  } else if (txIdx >= 0 || p.transaction_id) {
+    if (txIdx >= 0) data.transactions.splice(txIdx, 1);
+    p.transaction_id = null;
+    p.paid_at = null;
+  }
+
+  data.payments[idx] = { ...p, updated_at: now };
+  saveUserData(uid, data);
+  return data.payments[idx];
+}
+
 export async function route<T>(method: Method, pathAndQuery: string, body?: unknown): Promise<T> {
   // microtask para deixar o consumidor parecer async
   await Promise.resolve();
@@ -196,7 +256,18 @@ export async function route<T>(method: Method, pathAndQuery: string, body?: unkn
     if (collection === "payments" && docId && subAction === "pay" && method === "POST") {
       const updated = repo.update(collection, docId, { status: "paid" as PaymentStatus, paid_at: nowIso() });
       if (!updated) throw new ApiError(404, "Pagamento não encontrado");
-      return updated as unknown as T;
+      return syncPaymentTransaction(currentUid(), docId) as unknown as T;
+    }
+
+    // payments: POST/PUT mantêm a transação sincronizada com o status
+    if (collection === "payments" && method === "POST" && !docId) {
+      const created = repo.create<Payment>(collection, (body as Record<string, unknown>) || {});
+      return syncPaymentTransaction(currentUid(), created.id) as unknown as T;
+    }
+    if (collection === "payments" && docId && !subAction && method === "PUT") {
+      const updated = repo.update(collection, docId, (body as Record<string, unknown>) || {});
+      if (!updated) throw new ApiError(404, "Pagamento não encontrado");
+      return syncPaymentTransaction(currentUid(), docId) as unknown as T;
     }
 
     if (!docId) {

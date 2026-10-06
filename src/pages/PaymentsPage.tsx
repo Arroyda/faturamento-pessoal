@@ -113,7 +113,7 @@ export default function PaymentsPage() {
   async function markAsPaid(id: string) {
     try {
       await api.post(`/payments/${id}/pay`);
-      toast.success("Marcado como pago");
+      toast.success("Pago — despesa lançada em Transações");
       refetch();
     } catch (e) {
       toast.error(apiError(e));
@@ -174,7 +174,10 @@ export default function PaymentsPage() {
                   <tr key={p.id} className="border-t border-slate-100 dark:border-slate-800">
                     <td className="px-4 py-3 text-slate-500 dark:text-slate-400">{formatDate(p.due_date)}</td>
                     <td className="px-4 py-3">
-                      <div className="font-medium text-slate-900 dark:text-slate-100">{p.description}</div>
+                      <div className="flex items-center gap-2 font-medium text-slate-900 dark:text-slate-100">
+                        {p.description}
+                        <span className="chip bg-rose-100 text-rose-700 dark:bg-rose-500/20 dark:text-rose-300">Despesa</span>
+                      </div>
                       {p.payee && <div className="text-xs text-slate-500 dark:text-slate-400">{p.payee}</div>}
                     </td>
                     <td className="px-4 py-3"><span className="chip">{p.owner_type === "business" ? "Empresa" : "Pessoal"}</span></td>
@@ -185,7 +188,7 @@ export default function PaymentsPage() {
                     <td className="px-4 py-3 text-right">
                       <div className="inline-flex gap-1">
                         {p.status !== "paid" && (
-                          <button onClick={() => markAsPaid(p.id)} className="btn-ghost text-emerald-600 dark:text-emerald-400"><CheckCircle2 className="h-3.5 w-3.5" /></button>
+                          <button onClick={() => markAsPaid(p.id)} className="btn-ghost text-emerald-600 dark:text-emerald-400" title="Marcar como pago e lançar despesa"><CheckCircle2 className="h-3.5 w-3.5" /> Pago</button>
                         )}
                         <button onClick={() => startEdit(p)} className="btn-ghost"><Pencil className="h-3.5 w-3.5" /></button>
                         <button onClick={() => handleDelete(p.id)} className="btn-danger"><Trash2 className="h-3.5 w-3.5" /></button>
